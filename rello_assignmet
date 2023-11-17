@@ -1,0 +1,48 @@
+const questionsStore = [
+  { question: "What is the speed of light", subject: "Physics", topic: "waves", difficulty: "Easy", marks: 5 },
+  // Add more sample questions here
+];
+
+class QuestionPaperGenerator {
+  constructor(questionStore) {
+    this.questionStore = questionStore;
+  }
+
+  generateQuestionPaper(totalMarks, difficultyDistribution) {
+    const questionPaper = [];
+
+    Object.entries(difficultyDistribution).forEach(([difficulty, percentage]) => {
+      const numberOfQuestions = Math.floor((percentage / 100) * totalMarks / this.getAverageMarks(difficulty));
+
+      const filteredQuestions = this.filterQuestions(difficulty, numberOfQuestions);
+
+      questionPaper.push(...filteredQuestions);
+    });
+
+    return questionPaper;
+  }
+
+  filterQuestions(difficulty, numberOfQuestions) {
+    const filteredQuestions = this.questionStore.filter(question => question.difficulty === difficulty);
+
+    if (filteredQuestions.length < numberOfQuestions) {
+      console.error(`Not enough questions available for difficulty: ${difficulty}`);
+      return filteredQuestions;
+    }
+
+    return filteredQuestions.slice(0, numberOfQuestions);
+  }
+
+  getAverageMarks(difficulty) {
+    const filteredQuestions = this.questionStore.filter(question => question.difficulty === difficulty);
+    const totalMarks = filteredQuestions.reduce((acc, question) => acc + question.marks, 0);
+
+    return totalMarks / filteredQuestions.length;
+  }
+}
+
+// Sample usage
+const questionPaperGenerator = new QuestionPaperGenerator(questionsStore);
+const generatedPaper = questionPaperGenerator.generateQuestionPaper(100, { Easy: 20, Medium: 50, Hard: 30 });
+
+console.log(generatedPaper);
